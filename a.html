@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta name="description" content="汉服活动地点导航" />
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta http-equiv="Cache-Control" content="max-age=300" />
+
+    <title>汉服活动地点导航</title>
+    <style>
+        body, html{width: 100%;height: 100%;margin:0;font-family:"微软雅黑";}
+        #l-map {
+            height: 300px;
+            width: 100%;
+        }
+
+        #r-result, #r-result table {
+            width: 100%;
+            font-size: 12px;
+        }
+    </style>
+
+
+
+<!--     <script src="../js/jquery.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="js/material.min.js"></script>
+    <script src="js/ripples.min.js"></script>
+    <script src="js/jxlxb.js"></script> -->
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=2AeLDHQKw8bd9oaqHwEdSSOl"></script>
+    <script>
+    window.onload =function(){
+        var geolocation = new BMap.Geolocation();
+        geolocation.getCurrentPosition(function (r) {
+            console.log(JSON.stringify(r));
+            if (this.getStatus() == BMAP_STATUS_SUCCESS) {
+                convertPosition(r.point.lng, r.point.lat);
+                console.log(r.point.lng, r.point.lat);
+            }
+            else {
+                alert(this.getStatus());
+            }
+        });
+        
+    }
+
+    //成功时
+    function onSuccess(position) {
+        alert("onS" + position.coords.longitude);
+        if (position.coords) {
+            //返回用户位置
+            //经度
+            var longitude = position.coords.longitude;
+            //纬度
+            var latitude = position.coords.latitude;
+            convertPosition(longitude, latitude);
+            console.log(longitude, latitude);
+        };
+    }
+
+
+    //失败时
+    function onError(error) {
+        alert("error");
+        switch (error.code) {
+            case 1:
+                alert("位置服务被拒绝");
+                break;
+
+            case 2:
+                alert("暂时获取不到位置信息");
+                break;
+
+            case 3:
+                alert("获取信息超时");
+                break;
+
+            case 4:
+                alert("未知错误");
+                break;
+        }
+
+        mapImg(0, 0);
+
+
+    }
+
+    function convertPosition(longitude, latitude) {
+        var PositionUrl = "http://api.map.baidu.com/geoconv/v1/?";
+        var str = "coords=" + longitude + "," + latitude + "&from=1&to=5";
+        var url = PositionUrl + str;
+        var script = document.createElement('script');
+        script.src = url + '&ak=2AeLDHQKw8bd9oaqHwEdSSOl&callback=dealResult';
+        document.getElementsByTagName("head")[0].appendChild(script);
+
+    }
+    function dealResult(msg) {
+        if (msg.status != 0) {
+            //wzzh.ui.msg("转换地址失败！");
+            console.log("转换地址失败！"+ msg)
+            return;
+        }
+        console.log("转换地址成功！"+ JSON.stringify(msg));
+        fixlat = msg.result[0].y;
+        fixlon = msg.result[0].x;
+        console.log(fixlon, fixlat);
+        mapImg(fixlon, fixlat);
+    }
+
+    function mapImg(longitude, latitude) {
+
+        if (longitude == 0 && latitude == 0) {
+            longitude = 120.662177;
+            latitude = 27.993397;
+        } else {
+
+        }
+
+        //使用百度地图API
+        //创建地图实例
+        //     var map = new BMap.Map("container");
+
+        //创建一个坐标
+        var point = new BMap.Point(longitude, latitude);
+        //地图初始化，设置中心点坐标和地图级别
+        //      map.centerAndZoom(point, 15);
+
+        // 百度地图API功能
+        var map = new BMap.Map("l-map");
+        map.centerAndZoom(new BMap.Point(120.642246,28.045301), 12);
+        //   var p1 = new BMap.Point(120.659, 27.998);
+        var p2 = new BMap.Point(120.667883,28.040607);
+
+        var transit = new BMap.TransitRoute(map, {
+            renderOptions: { map: map, panel: "r-result" }
+        });
+        transit.search(point, p2);
+
+
+    }
+
+
+
+
+    </script>
+
+</head>
+<body>
+    <div id="jxhead"></div>
+
+    <div id="l-map"></div>
+    <div id="r-result"></div>
+
+</body>
+</html>
