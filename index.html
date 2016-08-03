@@ -8,12 +8,11 @@
     <meta http-equiv="Cache-Control" content="max-age=300" />
 
     <title>汉服活动地点导航</title>
-
     <style>
-/*        .card {
+        .card {
             margin-top: 10px;
-        }*/
-        body, html{width: 100%;height: 100%;margin:0;font-family:"微软雅黑";}
+        }
+
         #l-map {
             height: 300px;
             width: 100%;
@@ -25,74 +24,43 @@
         }
     </style>
 
-    <!-- // <script src="https://api.map.baidu.com/api?v=2.0&ak=2AeLDHQKw8bd9oaqHwEdSSOl&s=1"></script> -->
-    <script src="https://api.map.baidu.com/api?v=2.0&ak=x6hKx3I2dg5mo5YowdD3pkKlkz4W85rZ&s=1"></script>
+
+
+<!--     <script src="../js/jquery.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="js/material.min.js"></script>
+    <script src="js/ripples.min.js"></script>
+    <script src="js/jxlxb.js"></script> -->
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=2AeLDHQKw8bd9oaqHwEdSSOl"></script>
     <script>
-    var BMAP_STATUS_SUCCESS = 0;
-    window.onload = function(){
+    window.onload =function(){
         var geolocation = new BMap.Geolocation();
-        geolocation.getCurrentPosition(onSuccess, onError);
-
-        // var longitude = 118.924657;
-        // //纬度;
-        // var latitude = 29.440842;
-        //         //创建一个坐标
-        // var start = new BMap.Point(longitude, latitude);
-        // //地图初始化，设置中心点坐标和地图级别
-        // //      map.centerAndZoom(point, 15);
-
-        // // 百度地图API功能
-        // var map = new BMap.Map("l-map");
-        // map.centerAndZoom(new BMap.Point(120.705869, 28.000845), 12);
-        // //   var p1 = new BMap.Point(120.659, 27.998);
-        // var end = new BMap.Point(119.924657, 28.440842);
-
-        // var transit = new BMap.TransitRoute(map, {
-        //     renderOptions: { map: map, panel: "r-result" }
-        // });
-        // transit.search(point, p2);
-
-        // var map = new BMap.Map("l-map");
-        // map.centerAndZoom(new BMap.Point(116.404, 39.915), 12);
-
-        // var transit = new BMap.TransitRoute(map, {
-        //     renderOptions: {map: map, panel: "r-result"}
-        // });
-        // transit.search("温州", end);
-        // transit.search("温州", '瓯北');
+        geolocation.getCurrentPosition(function (r) {
+            if (this.getStatus() == BMAP_STATUS_SUCCESS) {
+                convertPosition(r.point.lng, r.point.lat);
+                console.log(r.point.lng, r.point.lat);
+            }
+            else {
+                alert(this.getStatus());
+            }
+        });
+        
     }
+
     //成功时
     function onSuccess(position) {
-
-
-
-
-        // console.log("onS" + position.coords.longitude);
-        console.log("onS" + position.point);
-        console.log("onS" + this.getStatus());
-        // if (position.coords) {
-        //     //返回用户位置
-        //     //经度
-        //     var longitude = position.coords.longitude;
-        //     //纬度
-        //     var latitude = position.coords.latitude;
-        //     convertPosition(longitude, latitude);
-
-        // };
-        if (this.getStatus() == BMAP_STATUS_SUCCESS) {
-            // mapImg(r.point.lng, r.point.lat);
+        alert("onS" + position.coords.longitude);
+        if (position.coords) {
             //返回用户位置
             //经度
-            var longitude = position.point.lng;
+            var longitude = position.coords.longitude;
             //纬度
-            var latitude = position.point.lat;
+            var latitude = position.coords.latitude;
             convertPosition(longitude, latitude);
-
-        }
-        else {
-            alert(this.getStatus());
-        }
+            console.log(longitude, latitude);
+        };
     }
+
 
     //失败时
     function onError(error) {
@@ -125,19 +93,20 @@
         var str = "coords=" + longitude + "," + latitude + "&from=1&to=5";
         var url = PositionUrl + str;
         var script = document.createElement('script');
-        script.src = url + '&ak=x6hKx3I2dg5mo5YowdD3pkKlkz4W85rZ&s=1&callback=dealResult';
+        script.src = url + '&ak=2AeLDHQKw8bd9oaqHwEdSSOl&callback=dealResult';
         document.getElementsByTagName("head")[0].appendChild(script);
 
     }
     function dealResult(msg) {
         if (msg.status != 0) {
             //wzzh.ui.msg("转换地址失败！");
-            console.log(msg)
+            console.log("转换地址失败！"+ msg)
             return;
         }
-        console.log(msg);
-        fixlon = msg.result[0].x;
+        console.log("转换地址成功！"+ msg)
         fixlat = msg.result[0].y;
+        fixlon = msg.result[0].x;
+        console.log(fixlon, fixlat);
         mapImg(fixlon, fixlat);
     }
 
@@ -146,6 +115,8 @@
         if (longitude == 0 && latitude == 0) {
             longitude = 120.662177;
             latitude = 27.993397;
+        } else {
+
         }
 
         //使用百度地图API
@@ -159,43 +130,18 @@
 
         // 百度地图API功能
         var map = new BMap.Map("l-map");
-        map.centerAndZoom(new BMap.Point(120.705869, 28.000845), 12);
+        map.centerAndZoom(new BMap.Point(120.642246,28.045301), 12);
         //   var p1 = new BMap.Point(120.659, 27.998);
-        var p2 = new BMap.Point(119.924657, 28.440842);
+        var p2 = new BMap.Point(120.642246,28.045301);
 
         var transit = new BMap.TransitRoute(map, {
             renderOptions: { map: map, panel: "r-result" }
         });
         transit.search(point, p2);
 
+
     }
 
-// function getLocation() {
-//         var options = {
-//             enableHighAccuracy: true,
-//             maximumAge: 1000
-//         }
-//     var geolocation = new BMap.Geolocation();
-//     geolocation.getCurrentPosition(function (r) {
-//         if (this.getStatus() == BMAP_STATUS_SUCCESS) {
-//             //if (o.success) o.success(r.point.lng, r.point.lat);
-//             mapImg(r.point.lng, r.point.lat);
-//         }
-//         else {
-//             //if (o.failure) o.failure(this.getStatus());
-//         }
-//     });
-//         //if (navigator.geolocation) {
-//         //    //浏览器支持geolocation
-//         //    navigator.geolocation.getCurrentPosition(onSuccess, onError);
-//         //    alert("onGetL2");
-
-
-//         //} else {
-//         //    //浏览器不支持geolocation
-//         //   alert("不支持定位！");
-//         //}
-//     }
 
 
 
@@ -203,9 +149,10 @@
 
 </head>
 <body>
+    <div id="jxhead"></div>
+
     <div id="l-map"></div>
     <div id="r-result"></div>
 
 </body>
 </html>
-
